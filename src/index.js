@@ -1,6 +1,11 @@
+import Rectangle from "./rectangle";
+
 const canvas = document.getElementById("cnvs");
 
-const gameState = {};
+const gameState = {rects:
+        [new Rectangle(10,10,20,20, 1, 0),
+            new Rectangle(500,10,20,20, -1, 0)]
+};
 
 function queueUpdates(numTicks) {
     for (let i = 0; i < numTicks; i++) {
@@ -16,10 +21,21 @@ function draw(tFrame) {
     context.clearRect(0, 0, canvas.width, canvas.height)
 
     // draw
+    gameState.rects.forEach(r=>{
+        context.beginPath()
+        context.rect(r.x, r.y, r.w, r.h)
+        context.fill()
+    })
+
 }
 
 function update(tick) {
 
+    gameState.rects.forEach(r=>{
+        r.x += r.vx
+        r.y += r.vy
+
+    })
 }
 
 function run(tFrame) {
