@@ -11,7 +11,7 @@ function getRandomInt(min, max) {
 }
 
 const gameState = {rects:
-        [new Rectangle(getRandomInt(0, canvasWidth),getRandomInt(0, canvasHeight),20,20, 1, 0),
+        [new Rectangle(200,200,20,20, -1, 0),
             new Rectangle(getRandomInt(0, canvasWidth),getRandomInt(0, canvasHeight),20,20, 1, 0),
             new Rectangle(getRandomInt(0, canvasWidth),getRandomInt(0, canvasHeight),20,20, 1, 0),
             new Rectangle(getRandomInt(0, canvasWidth),getRandomInt(0, canvasHeight),20,20, -1, 0),
@@ -22,7 +22,7 @@ const gameState = {rects:
             [
                 new Circle(100,100,10, 1, 0),
                 new Circle(200,100,10, -1, 0),
-                new Circle(getRandomInt(0, canvasWidth),getRandomInt(0, canvasHeight),10, 1, 0),
+                new Circle(100,200,10, 1, 0),
                 new Circle(getRandomInt(0, canvasWidth),getRandomInt(0, canvasHeight),10, 1, 0),
                 new Circle(getRandomInt(0, canvasWidth),getRandomInt(0, canvasHeight),10, -1, 0),
                 new Circle(getRandomInt(0, canvasWidth),getRandomInt(0, canvasHeight),10, -1, 0)
@@ -94,6 +94,16 @@ function update(tick) {
                 r.vy *= -1;
                 otherRect.vx *= -1;
                 otherRect.vy *= -1;
+            }
+        }) 
+        
+        gameState.circles.forEach(circle => {
+            if(r.intersectsCircle(circle))
+            {
+                r.vx *= -1;
+                r.vy *= -1;
+                circle.vx *= -1;
+                circle.vy *= -1;
             }
         }) 
 

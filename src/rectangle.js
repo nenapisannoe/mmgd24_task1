@@ -38,5 +38,16 @@ export default class Rectangle {
             && (rect.y < this.y + this.w)
     }
 
+    intersectsCircle(circle)
+    {
+        let closestX = Math.max(this.x, Math.min(circle.x, this.x + this.w));
+        let closestY = Math.max(this.y, Math.min(circle.y, this.y + this.h));
+
+        let distanceX = circle.x - closestX;
+        let distanceY = circle.y - closestY;
+
+        return (distanceX * distanceX + distanceY * distanceY) < (circle.r * circle.r);
+    }
+
     
 }
