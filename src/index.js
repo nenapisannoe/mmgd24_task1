@@ -1,4 +1,5 @@
 import Rectangle from "./rectangle";
+import Circle from "./circle";
 
 const canvasWidth = window.innerWidth; 
 const canvasHeight = window.innerHeight; 
@@ -9,16 +10,23 @@ function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-const rect = new Rectangle(getRandomInt(0, canvasWidth),getRandomInt(0, canvasHeight),20,20, 1, 0);
-
 const gameState = {rects:
         [new Rectangle(getRandomInt(0, canvasWidth),getRandomInt(0, canvasHeight),20,20, 1, 0),
-            new Rectangle(getRandomInt(0, canvasWidth),getRandomInt(0, canvasHeight),20,20, -1, 0),
-            new Rectangle(getRandomInt(0, canvasWidth),getRandomInt(0, canvasHeight),20,20, -1, 0),
+            new Rectangle(getRandomInt(0, canvasWidth),getRandomInt(0, canvasHeight),20,20, 1, 0),
+            new Rectangle(getRandomInt(0, canvasWidth),getRandomInt(0, canvasHeight),20,20, 1, 0),
             new Rectangle(getRandomInt(0, canvasWidth),getRandomInt(0, canvasHeight),20,20, -1, 0),
             new Rectangle(getRandomInt(0, canvasWidth),getRandomInt(0, canvasHeight),20,20, -1, 0),
             new Rectangle(getRandomInt(0, canvasWidth),getRandomInt(0, canvasHeight),20,20, -1, 0)
-        ]
+        ],
+        circles:
+            [
+                new Circle(100,100,10, 1, 0),
+                new Circle(200,100,10, -1, 0),
+                new Circle(getRandomInt(0, canvasWidth),getRandomInt(0, canvasHeight),10, 1, 0),
+                new Circle(getRandomInt(0, canvasWidth),getRandomInt(0, canvasHeight),10, 1, 0),
+                new Circle(getRandomInt(0, canvasWidth),getRandomInt(0, canvasHeight),10, -1, 0),
+                new Circle(getRandomInt(0, canvasWidth),getRandomInt(0, canvasHeight),10, -1, 0)
+            ] 
 };
 
 function queueUpdates(numTicks) {
@@ -40,15 +48,27 @@ function draw(tFrame) {
         context.fill();
     }
 
+    function drawCircle(circle, color) {
+        context.beginPath();
+        context.arc(circle.x, circle.y, circle.r, 0, 2 * Math.PI);
+        context.fillStyle = color;
+        context.fill();
+    }
+
+    
+
     // clear canvas
     context.clearRect(0, 0, canvas.width, canvas.height)
 
     // draw
     gameState.rects.forEach(r=>{
-        drawRectangle(r, "BLack")
+        drawRectangle(r, "Black")
     })
 
-    drawRectangle(rect, "Green");
+    gameState.circles.forEach(c=>{
+        drawCircle(c, "Blue")
+    })
+
 
 }
 
@@ -67,19 +87,44 @@ function update(tick) {
             r.vy *= -1; 
         }
 
+        gameState.rects.forEach(otherRect => {
+            if(r!= otherRect && r.intersects(otherRect))
+            {
+                r.vx *= -1;
+                r.vy *= -1;
+                otherRect.vx *= -1;
+                otherRect.vy *= -1;
+            }
+        }) 
+
     })
 
+    gameState.circles.forEach(c=>{
+        c.x += c.vx
+        c.y += c.vy
+            
+        
+        if (c.x <= 0 || c.x + c.r >= canvasWidth) {
+            c.vx *= -1; 
+        }
 
-    rect.x += rect.vx
-    rect.y += rect.vy
+        if (c.y <= 0 || c.y + c.r >= canvasHeight) {
+            c.vy *= -1; 
+        }
 
-    if (rect.x <= 0 || rect.x + rect.w >= canvasWidth) {
-        rect.vx *= -1; 
-    }
+        gameState.circles.forEach(otherCircle => {
+            if(c!= otherCircle && c.intersects(otherCircle))
+            {
+                c.vx *= -1;
+                c.vy *= -1;
+                otherCircle.vx *= -1;
+                otherCircle.vy *= -1;
+            }
+        }) 
 
-    if (rect.y <= 0 || rect.y + rect.h >= canvasHeight) {
-        rect.vy *= -1; 
-    }
+    })
+
+    
 
 }
 
