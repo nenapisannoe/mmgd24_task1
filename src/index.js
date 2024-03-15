@@ -1,5 +1,7 @@
 import Rectangle from "./rectangle";
 import Circle from "./circle";
+import Triangle from "./triangle";
+import Pentagon from "./pentagon";
 
 const canvasWidth = window.innerWidth; 
 const canvasHeight = window.innerHeight; 
@@ -10,23 +12,30 @@ function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-const gameState = {rects:
-        [new Rectangle(200,200,20,20, -1, 0),
-            new Rectangle(getRandomInt(0, canvasWidth),getRandomInt(0, canvasHeight),20,20, 1, 0),
-            new Rectangle(getRandomInt(0, canvasWidth),getRandomInt(0, canvasHeight),20,20, 1, 0),
-            new Rectangle(getRandomInt(0, canvasWidth),getRandomInt(0, canvasHeight),20,20, -1, 0),
-            new Rectangle(getRandomInt(0, canvasWidth),getRandomInt(0, canvasHeight),20,20, -1, 0),
-            new Rectangle(getRandomInt(0, canvasWidth),getRandomInt(0, canvasHeight),20,20, -1, 0)
-        ],
-        circles:
-            [
-                new Circle(100,100,10, 1, 0),
-                new Circle(200,100,10, -1, 0),
-                new Circle(100,200,10, 1, 0),
-                new Circle(getRandomInt(0, canvasWidth),getRandomInt(0, canvasHeight),10, 1, 0),
-                new Circle(getRandomInt(0, canvasWidth),getRandomInt(0, canvasHeight),10, -1, 0),
-                new Circle(getRandomInt(0, canvasWidth),getRandomInt(0, canvasHeight),10, -1, 0)
-            ] 
+const gameState = {triangles:
+    [
+        new Triangle(10, getRandomInt(0, canvasWidth),getRandomInt(0, canvasHeight), -1, 0),
+        new Triangle(10, getRandomInt(0, canvasWidth),getRandomInt(0, canvasHeight), -1, 0),
+        new Triangle(10, getRandomInt(0, canvasWidth),getRandomInt(0, canvasHeight), -1, 0),
+        new Triangle(10, getRandomInt(0, canvasWidth),getRandomInt(0, canvasHeight), 1, 0),
+        new Triangle(10, getRandomInt(0, canvasWidth),getRandomInt(0, canvasHeight), 1, 0)
+    ],
+    circles:
+    [
+        new Circle(getRandomInt(0, canvasWidth),getRandomInt(0, canvasHeight),10, 1, 0),
+        new Circle(getRandomInt(0, canvasWidth),getRandomInt(0, canvasHeight),10, -1, 0),
+        new Circle(getRandomInt(0, canvasWidth),getRandomInt(0, canvasHeight),10, 1, 0),
+        new Circle(getRandomInt(0, canvasWidth),getRandomInt(0, canvasHeight),10, 1, 0),
+        new Circle(getRandomInt(0, canvasWidth),getRandomInt(0, canvasHeight),10, -1, 0),
+        new Circle(getRandomInt(0, canvasWidth),getRandomInt(0, canvasHeight),10, -1, 0)
+    ],
+    pentagones:
+    [
+        new Pentagon(10,100,100, 1, 0),
+        new Pentagon(10,200,100, -1, 0),
+        new Pentagon(10,getRandomInt(0, canvasWidth),getRandomInt(0, canvasHeight), -1, 0),
+        new Pentagon(10,getRandomInt(0, canvasWidth),getRandomInt(0, canvasHeight), 1, 0)
+    ]
 };
 
 function queueUpdates(numTicks) {
@@ -41,79 +50,35 @@ function queueUpdates(numTicks) {
 function draw(tFrame) {
     const context = canvas.getContext('2d');
 
-    function drawRectangle(rect, color) {
-        context.beginPath();
-        context.rect(rect.x, rect.y, rect.w, rect.h);
-        context.fillStyle = color;
-        context.fill();
-    }
-
-    function drawCircle(circle, color) {
-        context.beginPath();
-        context.arc(circle.x, circle.y, circle.r, 0, 2 * Math.PI);
-        context.fillStyle = color;
-        context.fill();
-    }
-
-    
 
     // clear canvas
     context.clearRect(0, 0, canvas.width, canvas.height)
 
     // draw
-    gameState.rects.forEach(r=>{
-        drawRectangle(r, "Black")
-    })
 
     gameState.circles.forEach(c=>{
-        drawCircle(c, "Blue")
+        c.draw(context)
     })
+
+    gameState.triangles.forEach(t=>{
+        t.draw(context)
+    })
+
+    gameState.pentagones.forEach(p=>{
+        p.draw(context)
+    })
+
 
 
 }
 
 function update(tick) {
 
-    gameState.rects.forEach(r=>{
-        r.x += r.vx
-        r.y += r.vy
-            
-        
-        if (r.x <= 0 || r.x + r.w >= canvasWidth) {
-            r.vx *= -1; 
-        }
-
-        if (r.y <= 0 || r.y + r.h >= canvasHeight) {
-            r.vy *= -1; 
-        }
-
-        gameState.rects.forEach(otherRect => {
-            if(r!= otherRect && r.intersects(otherRect))
-            {
-                r.vx *= -1;
-                r.vy *= -1;
-                otherRect.vx *= -1;
-                otherRect.vy *= -1;
-            }
-        }) 
-        
-        gameState.circles.forEach(circle => {
-            if(r.intersectsCircle(circle))
-            {
-                r.vx *= -1;
-                r.vy *= -1;
-                circle.vx *= -1;
-                circle.vy *= -1;
-            }
-        }) 
-
-    })
 
     gameState.circles.forEach(c=>{
-        c.x += c.vx
-        c.y += c.vy
-            
-        
+        c.x += c.vx;
+        c.y += c.vy;
+
         if (c.x <= 0 || c.x + c.r >= canvasWidth) {
             c.vx *= -1; 
         }
@@ -127,14 +92,77 @@ function update(tick) {
             {
                 c.vx *= -1;
                 c.vy *= -1;
+                c.hits+=1;
+                c.newColor();
                 otherCircle.vx *= -1;
                 otherCircle.vy *= -1;
+                otherCircle.hits +=1;
+                otherCircle.newColor();
+
             }
         }) 
 
     })
 
-    
+
+
+    gameState.triangles.forEach(t=>{
+        t.x += t.vx
+        t.y += t.vy
+
+        if (t.x <= 0 || t.x + t.s >= canvasWidth) {
+            t.vx *= -1; 
+        }
+
+        if (t.y <= 0 || t.y + t.s >= canvasHeight) {
+            t.vy *= -1; 
+        }
+
+        gameState.triangles.forEach(otherTriangle => {
+            if(t!= otherTriangle && t.intersects(otherTriangle))
+            {
+                t.vx *= -1;
+                t.vy *= -1;
+                t.hits+=1;
+                t.newColor();
+                otherTriangle.vx *= -1;
+                otherTriangle.vy *= -1;
+                otherTriangle.hits +=1;
+                otherTriangle.newColor();
+
+            }
+        }) 
+    })
+
+    gameState.pentagones.forEach(p=>{
+        p.x += p.vx
+        p.y += p.vy
+
+        if (p.x <= 0 || p.x + p.s >= canvasWidth) {
+            p.vx *= -1; 
+        }
+
+        if (p.y <= 0 || p.y + p.s >= canvasHeight) {
+            p.vy *= -1; 
+        } 
+
+        gameState.pentagones.forEach(otherPentagon => {
+            if(p!= otherPentagon && p.intersects(otherPentagon))
+            {
+                p.vx *= -1;
+                p.vy *= -1;
+                p.hits+=1;
+                p.newColor();
+                otherPentagon.vx *= -1;
+                otherPentagon.vy *= -1;
+                otherPentagon.hits +=1;
+                otherPentagon.newColor();
+
+            }
+        }) 
+ 
+    })
+
 
 }
 

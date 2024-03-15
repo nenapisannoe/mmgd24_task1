@@ -5,6 +5,18 @@ export default class Circle {
         this.r = r
         this.vx = vx
         this.vy = vy
+        this.hits = 0
+        this.color = `rgb(${Math.floor(Math.random() * 255)},${Math.floor(Math.random() * 255)},${Math.floor(Math.random() * 255)})`
+    }
+
+    draw(context)
+    {
+        if(this.hits >= 3)
+            return;
+        context.beginPath();
+        context.arc(this.x, this.y, this.r, 0, 2 * Math.PI);
+        context.fillStyle = this.color;
+        context.fill();
     }
 
     get left() {
@@ -21,6 +33,10 @@ export default class Circle {
 
     get bottom() {
         return this.y + this.h
+    }
+
+    newColor() {
+        this.color = `rgb(${Math.floor(Math.random() * 255)},${Math.floor(Math.random() * 255)},${Math.floor(Math.random() * 255)})`
     }
 
     contains(point) {
