@@ -14,7 +14,7 @@ function getRandomInt(min, max) {
 
 const gameState = {triangles:
     [
-        new Triangle(10, getRandomInt(0, canvasWidth),getRandomInt(0, canvasHeight), -1, 0),
+        new Triangle(10, 100,200, -1, 0),
         new Triangle(10, getRandomInt(0, canvasWidth),getRandomInt(0, canvasHeight), -1, 0),
         new Triangle(10, getRandomInt(0, canvasWidth),getRandomInt(0, canvasHeight), -1, 0),
         new Triangle(10, getRandomInt(0, canvasWidth),getRandomInt(0, canvasHeight), 1, 0),
@@ -32,7 +32,7 @@ const gameState = {triangles:
     pentagones:
     [
         new Pentagon(10,100,100, 1, 0),
-        new Pentagon(10,200,100, -1, 0),
+        new Pentagon(10,getRandomInt(0, canvasWidth),getRandomInt(0, canvasHeight), -1, 0),
         new Pentagon(10,getRandomInt(0, canvasWidth),getRandomInt(0, canvasHeight), -1, 0),
         new Pentagon(10,getRandomInt(0, canvasWidth),getRandomInt(0, canvasHeight), 1, 0)
     ]
@@ -138,7 +138,7 @@ function update(tick) {
         p.x += p.vx
         p.y += p.vy
 
-        if (p.x <= 0 || p.x + p.s >= canvasWidth) {
+        if (p.left <= 0 || p.right >= canvasWidth) {
             p.vx *= -1; 
         }
 
@@ -153,10 +153,27 @@ function update(tick) {
                 p.vy *= -1;
                 p.hits+=1;
                 p.newColor();
+
                 otherPentagon.vx *= -1;
                 otherPentagon.vy *= -1;
                 otherPentagon.hits +=1;
                 otherPentagon.newColor();
+
+            }
+        }) 
+
+        gameState.triangles.forEach(triangle => {
+            if(p.intersects(triangle))
+            {
+                p.vx *= -1;
+                p.vy *= -1;
+                p.hits+=1;
+                p.newColor();
+                
+                triangle.vx *= -1;
+                triangle.vy *= -1;
+                triangle.hits +=1;
+                triangle.newColor();
 
             }
         }) 

@@ -12,6 +12,10 @@ export default class Pentagon {
 
     draw(context) {
 
+        if(this.hits >= 3)
+        return;
+    
+
         const vertices = [];
         const numVertices = 5;
         for (let i = 0; i < numVertices; i++) {
@@ -30,23 +34,43 @@ export default class Pentagon {
 
         context.fillStyle = this.color;
         context.fill();
+
+        const thisAABB = {
+            left: this.left,
+            right: this.left + this.s*2,
+            top: this.y - this.s,
+            bottom: this.y + this.s
+        };
+
+        context.strokeStyle = 'red'; 
+        context.strokeRect(thisAABB.left, thisAABB.top, thisAABB.right - thisAABB.left, thisAABB.bottom - thisAABB.top); 
+
+    }
+
+    
+    newColor() {
+        this.color = `rgb(${Math.floor(Math.random() * 255)},${Math.floor(Math.random() * 255)},${Math.floor(Math.random() * 255)})`
     }
 
     get left() {
-        return this.x - (this.s / 2)
+        return this.x - (this.s)
+    }
+
+    get right() {
+        return this.x + this.s
     }
 
     intersects(otherPentagon) {
         const thisAABB = {
             left: this.left,
-            right: this.left + this.s,
+            right: this.right,
             top: this.y - this.s,
             bottom: this.y + this.s
         };
 
         const otherAABB = {
             left: otherPentagon.left,
-            right: otherPentagon.left + otherPentagon.s,
+            right: otherPentagon.right,
             top: otherPentagon.y - otherPentagon.s,
             bottom: otherPentagon.y + otherPentagon.s
         };

@@ -11,6 +11,11 @@ export default class Triangle {
 
     draw(context)
     {
+
+        if(this.hits >= 3)
+        return;
+
+
         const vertex1X = this.x;       
         const vertex1Y = this.y - this.s;  
         const vertex2X = this.x - this.s; 
@@ -27,23 +32,38 @@ export default class Triangle {
         
         context.fillStyle = this.color;
         context.fill();
+
+         const thisAABB = {
+            left: this.left,
+            right: this.right,
+            top: this.y - this.s,
+            bottom: this.y + this.s
+        };
+
+        context.strokeStyle = 'red'; 
+        context.strokeRect(thisAABB.left, thisAABB.top, thisAABB.right - thisAABB.left, thisAABB.bottom - thisAABB.top); 
+
     }
 
     get left() {
-        return this.x - (this.s / 2)
+        return this.x - this.s
+    }
+
+    get right() {
+        return this.x + this.s
     }
 
     intersects(otherTriangle) {
         const thisAABB = {
             left: this.left,
-            right: this.left + this.s,
+            right: this.right,
             top: this.y - this.s,
             bottom: this.y + this.s
         };
 
         const otherAABB = {
             left: otherTriangle.left,
-            right: otherTriangle.left + otherTriangle.s,
+            right: otherTriangle.right,
             top: otherTriangle.y - otherTriangle.s,
             bottom: otherTriangle.y + otherTriangle.s
         };
