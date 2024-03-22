@@ -14,7 +14,7 @@ function getRandomInt(min, max) {
 
 const gameState = {triangles:
     [
-        new Triangle(10, 100,200, -1, 0),
+        new Triangle(10, 100,200, 1, 0),
         new Triangle(10, getRandomInt(0, canvasWidth),getRandomInt(0, canvasHeight), -1, 0),
         new Triangle(10, getRandomInt(0, canvasWidth),getRandomInt(0, canvasHeight), -1, 0),
         new Triangle(10, getRandomInt(0, canvasWidth),getRandomInt(0, canvasHeight), 1, 0),
@@ -22,7 +22,7 @@ const gameState = {triangles:
     ],
     circles:
     [
-        new Circle(getRandomInt(0, canvasWidth),getRandomInt(0, canvasHeight),10, 1, 0),
+        new Circle(200,200,10, -1, 0),
         new Circle(getRandomInt(0, canvasWidth),getRandomInt(0, canvasHeight),10, -1, 0),
         new Circle(getRandomInt(0, canvasWidth),getRandomInt(0, canvasHeight),10, 1, 0),
         new Circle(getRandomInt(0, canvasWidth),getRandomInt(0, canvasHeight),10, 1, 0),
@@ -98,6 +98,36 @@ function update(tick) {
                 otherCircle.vy *= -1;
                 otherCircle.hits +=1;
                 otherCircle.newColor();
+
+            }
+        }) 
+
+        gameState.triangles.forEach(triangle => {
+            if(c.intersectsShape(triangle))
+            {
+                c.vx *= -1;
+                c.vy *= -1;
+                c.hits+=1;
+                c.newColor();
+                triangle.vx *= -1;
+                triangle.vy *= -1;
+                triangle.hits +=1;
+                triangle.newColor();
+
+            }
+        }) 
+
+        gameState.pentagones.forEach(pentagon => {
+            if(c.intersectsShape(pentagon))
+            {
+                c.vx *= -1;
+                c.vy *= -1;
+                c.hits+=1;
+                c.newColor();
+                pentagon.vx *= -1;
+                pentagon.vy *= -1;
+                pentagon.hits +=1;
+                pentagon.newColor();
 
             }
         }) 

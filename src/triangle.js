@@ -45,6 +45,10 @@ export default class Triangle {
 
     }
 
+    newColor() {
+        this.color = `rgb(${Math.floor(Math.random() * 255)},${Math.floor(Math.random() * 255)},${Math.floor(Math.random() * 255)})`
+    }
+
     get left() {
         return this.x - this.s
     }
@@ -73,6 +77,18 @@ export default class Triangle {
         const verticalOverlap = thisAABB.bottom > otherAABB.top && thisAABB.top < otherAABB.bottom;
 
         return horizontalOverlap && verticalOverlap;
+    }
+
+    intersectsCircle(circle)
+    {
+        const thisAABB = {
+            left: this.left,
+            right: this.right,
+            top: this.y - this.s,
+            bottom: this.y + this.s
+        };
+
+        
     }
 
 

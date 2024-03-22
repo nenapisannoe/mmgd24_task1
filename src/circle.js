@@ -17,14 +17,25 @@ export default class Circle {
         context.arc(this.x, this.y, this.r, 0, 2 * Math.PI);
         context.fillStyle = this.color;
         context.fill();
+
+        const thisAABB = {
+            left: this.left,
+            right: this.right,
+            top: this.y - this.r,
+            bottom: this.y + this.r
+        };
+
+
+        context.strokeStyle = 'red'; 
+        context.strokeRect(thisAABB.left, thisAABB.top, thisAABB.right - thisAABB.left, thisAABB.bottom - thisAABB.top); 
     }
 
     get left() {
-        return this.x
+        return this.x - this.r
     }
 
     get right() {
-        return this.x + this.w
+        return this.x + this.r
     }
 
     get top() {
@@ -47,6 +58,29 @@ export default class Circle {
         const distance = Math.sqrt(Math.pow(this.x - otherCircle.x, 2) + Math.pow(this.y - otherCircle.y, 2));
         return distance < this.r + otherCircle.r;
     }
+
+    intersectsShape(otherTriangle) {
+        const thisAABB = {
+            left: this.left,
+            right: this.right,
+            top: this.y - this.r,
+            bottom: this.y + this.r
+        };
+
+        const otherAABB = {
+            left: otherTriangle.left,
+            right: otherTriangle.right,
+            top: otherTriangle.y - otherTriangle.s,
+            bottom: otherTriangle.y + otherTriangle.s
+        };
+
+        const horizontalOverlap = thisAABB.right > otherAABB.left && thisAABB.left < otherAABB.right;
+
+        const verticalOverlap = thisAABB.bottom > otherAABB.top && thisAABB.top < otherAABB.bottom;
+
+        return horizontalOverlap && verticalOverlap;
+    }
+
 
     
 }
